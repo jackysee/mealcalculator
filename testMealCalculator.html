@@ -1,0 +1,84 @@
+﻿<html>
+	<head>
+		<title>Meal Calculator</title>
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.js"></script>
+		<script type="text/javascript" src="meal_calculator.js"></script>
+		<link rel="stylesheet" href="testsuite.css" />
+		
+		<script type="text/javascript">
+			
+			$(document).ready(function(){
+			
+				module("internals");
+			
+				test("get valid foods", function(){
+					var input = "雙層芝士孖堡 ,中薯條,中可樂, 雞翼";
+					var output = mealCalculator.getValidFoods(input);
+					//if(console && console.log) console.log(output.join(','));	
+					equals(output.join(','),  '雙層芝士孖堡,中薯條,中可樂');
+				});
+				
+				test("match meal food", function(){
+					var input = "雙層芝士孖堡,中薯條,中可樂,至尊漢堡".split(',');
+					var result = mealCalculator.matchMealFood(input, '至尊漢堡套餐');
+					equals(result, true);
+					
+					result = mealCalculator.matchMealFood(input, '雙層芝士孖堡套餐');
+					equals(result, true);
+					
+					result = mealCalculator.matchMealFood('中薯條,中可樂'.split(','), '雙層芝士孖堡套餐');
+					equals(result, false);
+				});
+				
+				test("get money saved by meal", function(){
+					equals(mealCalculator.getMoneySavedByMeal('雙層芝士孖堡套餐'), 6);
+					equals(mealCalculator.getMoneySavedByMeal('至尊漢堡套餐'), 7.5);
+				});
+				
+				test("get worthiest meal", function(){
+					var input = "雙層芝士孖堡,中薯條,中可樂,至尊漢堡".split(',');
+					var meal = mealCalculator.getWorthiestMeal(input);
+					//if(console && console.log) console.log(meal);
+					equals(meal, '至尊漢堡套餐');
+				});
+				
+				test("substract meal food from items", function(){
+					var input = "雙層芝士孖堡,中薯條,中可樂,至尊漢堡".split(',');
+					var output = mealCalculator.subtractMealFoodFromItems(input, "至尊漢堡套餐");
+					//if(console && console.log) console.log(output.join(','));
+					equals(output.join(','), '雙層芝士孖堡');
+				});
+				
+				test("get ordred meals", function(){
+					equals(mealCalculator.getOrderedMeals().join(','),'至尊漢堡套餐,雙層芝士孖堡套餐');
+				});
+				
+				
+				module("main test");
+				
+				test("main caculate", function(){
+					equals(mealCalculator.calculate("雙層芝士孖堡,中薯條,中可樂,至尊漢堡"), '至尊漢堡套餐,雙層芝士孖堡');
+					equals(mealCalculator.calculate("雙層芝士孖堡,中薯條,中可樂,中可樂"), '雙層芝士孖堡套餐,中可樂');
+					equals(mealCalculator.calculate("雙層芝士孖堡,中可樂,中可樂"), '雙層芝士孖堡,中可樂,中可樂');
+					equals(mealCalculator.calculate("雙層芝士孖堡,中薯條,中可樂,中薯條,中可樂,至尊漢堡"), '至尊漢堡套餐,雙層芝士孖堡套餐');
+					equals(mealCalculator.calculate("雙層芝士孖堡,雙層芝士孖堡,雙層芝士孖堡,中薯條,中可樂"), '雙層芝士孖堡套餐,雙層芝士孖堡,雙層芝士孖堡');
+				});
+				
+			
+			});
+			
+		</script>
+		
+	</head>
+	<body>
+	
+		<script type="text/javascript" src="testrunner.js"></script>
+		
+		<h1>Test Meal Calculator</h1>
+		<h2 id="banner"></h2>
+		<h2 id="userAgent"></h2>
+		<ol id="tests"></ol>
+		<div id="main"></div>
+		
+	</body>
+</html>
