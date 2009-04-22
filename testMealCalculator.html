@@ -2,14 +2,20 @@
 	<head>
 		<title>Meal Calculator</title>
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.js"></script>
+		<script type="text/javascript" src="mac_menu.js"></script>
 		<script type="text/javascript" src="meal_calculator.js"></script>
 		<link rel="stylesheet" href="testsuite.css" />
 		
 		<script type="text/javascript">
 			
 			$(document).ready(function(){
+				var lifeCycle = {
+					setup: function(){
+						mealCalculator.menu = macMenu;       
+					}
+				};
 			
-				module("internals");
+				module("internals", lifeCycle);
 			
 				test("get valid foods", function(){
 					var input = "雙層芝士孖堡 ,中薯條,中可樂, 雞翼";
@@ -54,7 +60,7 @@
 				});
 				
 				
-				module("main test");
+				module("main test", lifeCycle);
 				
 				test("main caculate", function(){
 					equals(mealCalculator.calculate("雙層芝士孖堡,中薯條,中可樂,至尊漢堡"), '至尊漢堡套餐,雙層芝士孖堡');
