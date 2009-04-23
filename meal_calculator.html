@@ -131,16 +131,13 @@
 						this.clearMenu();
 						var url = this.menuStore[name].url;
 						var ui = this;
-						
-						
 						$.getScript(url, function(data){
-							mealCalculator.menu = window.menu;
+							mealCalculator.setMenu(window.menu);
 							$(ui.menusTarget)
 								.find("a.menu").removeClass('active').end()
 								.find("a:contains('"+name+"')").addClass('active');
 							ui.loadFoods();
 						});
-						
 					}
 				},
 				

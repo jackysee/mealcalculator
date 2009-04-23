@@ -1,5 +1,10 @@
 ﻿var mealCalculator = {
 
+	setMenu: function(menu){
+		this.menu = menu;
+		this.orderedMeals = null;
+	},
+
 	getOrderedMeals: function(){
 		if(!this.orderedMeals){ // call on demand
 			var orderedMeals = [];
