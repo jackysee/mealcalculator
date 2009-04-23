@@ -1,4 +1,4 @@
-﻿(function(){
+﻿//(function(){
 	var macMenu =  {
 		foods: {
 			'雙層芝士孖堡': { price: 12.5 },
@@ -20,4 +20,4 @@
 	//This is so evil! Use jsonp instead!
 	window.menu = macMenu.getMenu(); 
 
-})();
+//})();
