@@ -1,4 +1,4 @@
-﻿
+﻿(function(){
 	var mosMenu = {
 		foods: {
 			/*burger*/
@@ -87,3 +87,4 @@
 	//This is so evil! Use jsonp instead!
 	window.menu = mosMenu.getMenu();
 
+})();
