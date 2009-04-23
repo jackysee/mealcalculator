@@ -13,7 +13,12 @@
 			#foods {padding: 5px 2px; }
 			#menus a, #foods a{ text-decoration:none; padding: 0 0.3em;}
 			#menus a:hover, #foods a:hover{ background-color: #aaa; color:white;}
-			#menus a.active {border:1px solid #333;}
+			#menus a.active { 
+                -moz-border-radius:5px;
+                -webkit-border-radius:5px;
+                background-color: #777;
+                color: #eee;
+            }
 			#selected { min-height: 1.3em; margin: 1em 0;}
 			#selected span { 
 				padding: 0 0.3em; 
@@ -55,7 +60,7 @@
 				
 				init: function(){
 					//load menu and first item
-					this.loadMenuStore();
+					$(this.menusTarget).html(this.loadMenuStore());
 					this.loadMenu($(this.menusTarget + " a.menu:first").text());
 					
 					//Components
@@ -71,9 +76,8 @@
 						.click(function(e){
 							var t = $(e.target);
 							if(t.is("a")){
-								var copy = t.clone();
 								$("<span/>")
-									.append(copy)
+									.append(t.clone())
 									.append("<a class='close' href='#'>x</a>")
 									.appendTo("#selected")
 									.click(function(){
@@ -123,7 +127,7 @@
 					for(var m in this.menuStore){
 						menuHtml.push("<a href='#' class='menu'>"+m+"</a>");
 					}
-					$(this.menusTarget).html(menuHtml.join(','));
+                    return menuHtml.join(',');
 				},
 				
 				loadMenu: function(name){
@@ -133,31 +137,33 @@
 						var url = this.menuStore[name].url;
 						var ui = this;
 						$.getScript(url, function(data){
-							mealCalculator.setMenu(window.menu);
+							mealCalculator.setMenu(window.menu); //evil!
 							$(ui.menusTarget)
 								.find("a.menu").removeClass('active').end()
 								.find("a:contains('"+name+"')").addClass('active');
-							ui.loadFoods();
+                            $(ui.foodsTarget).html(ui.loadFoods());
 						});
 					}
 				},
 				
+                //default render
 				loadFoods: function(){
 					var foods = [];
-					for(var f in mealCalculator.menu.foods){ 
-						foods.push(f); 
+                    var menuFoods = mealCalculator.menu.foods;
+					for(var f in menuFoods){ 
+						//foods.push({name:f, price:menuFoods[f].price}); 
+						foods.push($.extend({name:f}, menuFoods[f])); 
 					}
-					var html = $.map(foods, function(n,i){
-						return '<a class="food" href="#">'+n+'</a>($' + mealCalculator.menu.foods[f].price + ')';
+					return $.map(foods, function(n,i){
+						return '<a class="food" href="#">'+n.name+'</a>($' + n.price + ')';
 					}).join(",");
-					
-					$(this.foodsTarget).html(html);
 				},
 				
 				clearMenu: function(){
 					$([this.foodsTarget,this.selectedTarget,this.outputTarget].join(",")).html("");
 					$(this.suggestionTarget).hide();
 				}
+
 			};
 		
 			$(document).ready(function(){

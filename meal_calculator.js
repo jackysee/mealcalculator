@@ -33,10 +33,11 @@
 	
 	getValidFoods: function(val){
 		if(!val) return [];
+        if(!$.isArray(val)) val = val.split(",")
 		var m = this;
-		var inputItems = $.map(val.split(","), function(n){ 
+		var inputItems = $.map(val, function(n){ 
 			return $.trim(n); 
-		});;
+		});
 		var outputItems = $.grep(inputItems, function(n){
 			return m.menu.foods[$.trim(n)] != null;
 		});

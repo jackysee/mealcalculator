@@ -74,6 +74,7 @@
 			}
 			return meal;
 		},
+
 		
 		/* this should be the common menu interface*/
 		getMenu: function(){
