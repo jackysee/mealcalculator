@@ -3,6 +3,7 @@
 		<title>Meal Calculator</title>
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.js"></script>
 		<script type="text/javascript" src="mac_menu.js"></script>
+		<script type="text/javascript" src="mos_menu.js"></script>
 		<script type="text/javascript" src="meal_calculator.js"></script>
 		<link rel="stylesheet" href="testsuite.css" />
 		
@@ -11,7 +12,7 @@
 			$(document).ready(function(){
 				var lifeCycle = {
 					setup: function(){
-						mealCalculator.menu = macMenu;       
+						mealCalculator.menu = macMenu.getMenu();
 					}
 				};
 			
@@ -68,6 +69,24 @@
 					equals(mealCalculator.calculate("雙層芝士孖堡,中可樂,中可樂"), '雙層芝士孖堡,中可樂,中可樂');
 					equals(mealCalculator.calculate("雙層芝士孖堡,中薯條,中可樂,中薯條,中可樂,至尊漢堡"), '至尊漢堡套餐,雙層芝士孖堡套餐');
 					equals(mealCalculator.calculate("雙層芝士孖堡,雙層芝士孖堡,雙層芝士孖堡,中薯條,中可樂"), '雙層芝士孖堡套餐,雙層芝士孖堡,雙層芝士孖堡');
+				});
+				
+				
+				module("test mos menu");
+				
+				test("search food", function(){
+					equals(mosMenu.searchFood({type:'drink'}).join(','),'摩斯紅茶,香磨咖啡,可口可樂(M),可口可樂(L),鮮奶咖啡,抺茶鮮奶');
+					equals(mosMenu.searchFood({type:'burger'}).join(','),'摩斯漢堡,摩斯芝士漢堡,照燒牛油果漢堡');
+					equals(mosMenu.searchFood({type:'side',combo:'A'}).join(','),'厚切薯條(S)');
+					equals(mosMenu.searchFood({type:'side',combo:'B'}).join(','),'蝶蝶蝦,摩斯脆雞');
+				});
+				
+				test("get all meals", function(){
+					var meals = mosMenu.getAllMeals();
+					for(var m in meals){
+						console.log(m + ' -- ' + meals[m].foods.join(',') + " -- $" + meals[m].price);
+					}
+					ok(true,"view console.log");
 				});
 				
 			
