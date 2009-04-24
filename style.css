@@ -1,0 +1,35 @@
+			body{ font-size: 12px;}
+			h1 { font-size: 2em; color: #333; padding-bottom: 2px; border-bottom: 2px solid #888;}
+			h2 { font-size: 1.3em; margin-bottom: 3px;}
+			.section { margin: 0.3em; border-bottom: 1px solid #aaa;padding-bottom: 5px;}
+			#foods {padding: 5px 2px; }
+			#menus a, #foods a{ text-decoration:none; padding: 0 0.3em;}
+			#menus a:hover, #foods a:hover{ background-color: #aaa; color:white;}
+			#menus a.active { 
+                -moz-border-radius:5px;
+                -webkit-border-radius:5px;
+                background-color: #777;
+                color: #eee;
+            }
+			#selected { min-height: 1.3em; margin: 1em 0;}
+			#selected span { 
+				padding: 0 0.3em; 
+				margin:0.3em; 
+				line-height: 1.5em; 
+				border: 1px solid #ccc; 
+				-moz-border-radius: 8px;
+				-webkit-border-radius: 8px;
+				background-color:#eee; 
+				color:black;
+				display: inline-block;
+			}
+			#selected span a {text-decoration:none;}
+			#selected span a.close { 
+				padding-left: 5px; 
+				font-size:0.9em; 
+				font-family:Arial;
+			}
+			.total { font-size: 1.3em; font-weight:bold; color: green; margin-left: 1em;}
+			#suggestion {display:none;}
+			#footer { margin: 0.3em; }
+

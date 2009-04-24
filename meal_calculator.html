@@ -1,46 +1,9 @@
 ﻿<html>
 	<head>
 		<title>買餐計價</title>
+        <link rel="stylesheet" href="style.css" />
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.js"></script>
-		<!--<script type="text/javascript" src="mac_menu.js"></script>-->
-		<!--<script type="text/javascript" src="mos_menu.js"></script>-->
 		<script type="text/javascript" src="meal_calculator.js"></script>
-		<style type="text/css">
-			body{ font-size: 12px;}
-			h1 { font-size: 2em; color: #333; padding-bottom: 2px; border-bottom: 2px solid #888;}
-			h2 { font-size: 1.3em; margin-bottom: 3px;}
-			.section { margin: 0.3em; border-bottom: 1px solid #aaa;padding-bottom: 5px;}
-			#foods {padding: 5px 2px; }
-			#menus a, #foods a{ text-decoration:none; padding: 0 0.3em;}
-			#menus a:hover, #foods a:hover{ background-color: #aaa; color:white;}
-			#menus a.active { 
-                -moz-border-radius:5px;
-                -webkit-border-radius:5px;
-                background-color: #777;
-                color: #eee;
-            }
-			#selected { min-height: 1.3em; margin: 1em 0;}
-			#selected span { 
-				padding: 0 0.3em; 
-				margin:0.3em; 
-				line-height: 1.5em; 
-				border: 1px solid #ccc; 
-				-moz-border-radius: 8px;
-				-webkit-border-radius: 8px;
-				background-color:#eee; 
-				color:black;
-				display: inline-block;
-			}
-			#selected span a {text-decoration:none;}
-			#selected span a.close { 
-				padding-left: 5px; 
-				font-size:0.9em; 
-				font-family:Arial;
-			}
-			.total { font-size: 1.3em; font-weight:bold; color: green; margin-left: 1em;}
-			#suggestion {display:none;}
-			#footer { margin: 0.3em; }
-		</style>
 		<script type="text/javascript">
 		
 			/* UI  Controller*/
@@ -71,22 +34,14 @@
 							ui.loadMenu(t.text());
 						}
 					});
-					
-					$(this.foodsTarget)					
-						.click(function(e){
-							var t = $(e.target);
-							if(t.is("a")){
-								$("<span/>")
-									.append(t.clone())
-									.append("<a class='close' href='#'>x</a>")
-									.appendTo("#selected")
-									.click(function(){
-										$(this).remove();
-										return false;
-									});
-							}
-							return false;
-						});
+
+                    $(this.foodsTarget).click(function(e){
+                        var t = $(e.target);
+                        if(t.is("a.food")){
+                            ui.renderSelectedFood(t).appendTo("#selected");
+                        }
+                        return false;
+                    });
 						
 					$(this.clearLink).click(function(){
 						$([ui.selectedTarget,ui.outputTarget].join(',')).html("");
@@ -95,75 +50,96 @@
 					});
 					
 					$(this.findButton).click(function(){
-					
-						//Calculate
-						var selected = [];
-						$(ui.selectedTarget + " a.food").each(function(){ 
-							selected.push($(this).text()); 
-						});
-						var items = mealCalculator.calculate(selected.join(','));
-						
-						//reporting
-						var outputHtml = "";
-						var total = 0;
-						var menu = mealCalculator.menu;
-						for(var i in items){
-							var item = menu.foods[items[i]] || menu.meals[items[i]];
-							if(item){
-								outputHtml += "<li>" + items[i] + " ($" + item.price + ") </li>";
-								total += item.price;
-							}
-						}
-						if(outputHtml) outputHtml = '<ul>' + outputHtml + '</ul>';
-						outputHtml += '<p class="total">總額: $' + Math.round(total*1000)/1000 + '</p>'; //prevent floating point problem
-						$(ui.outputTarget).html(outputHtml);
+				        var items = ui.calculateItems();	//calculate
+						$(ui.outputTarget).html(ui.renderReport(items)); //report
 						$(ui.suggestionTarget).show();
 					});
 					
 				},
-				
+                
+                calculateItems: function(){
+                    var selected = [];
+                    $(this.selectedTarget + " a.food").each(function(){ 
+                        selected.push($(this).text()); 
+                    });
+                    return mealCalculator.calculate(selected);
+                },
+                
 				loadMenuStore: function(){
-					var menuHtml = [];
-					for(var m in this.menuStore){
-						menuHtml.push("<a href='#' class='menu'>"+m+"</a>");
-					}
-                    return menuHtml.join(',');
+                    return this.renderMenus(this.menuStore);
 				},
 				
 				loadMenu: function(name){
-					var activeMenu = $(this.menusTarget).find(".active").text();
+					var activeMenu = $(this.menusTarget + " .active").text();
 					if(activeMenu != name){
 						this.clearMenu();
-						var url = this.menuStore[name].url;
-						var ui = this;
+						var url = this.menuStore[name].url, ui = this;
 						$.getScript(url, function(data){
 							mealCalculator.setMenu(window.menu); //evil!
-							$(ui.menusTarget)
-								.find("a.menu").removeClass('active').end()
-								.find("a:contains('"+name+"')").addClass('active');
-                            $(ui.foodsTarget).html(ui.loadFoods());
+                            ui.activateMenu(name);
 						});
 					}
 				},
+
+                activateMenu: function(name){
+                    $(this.menusTarget)
+                        .find("a.menu").removeClass('active').end()
+                        .find("a:contains('"+name+"')").addClass('active');
+                    $(this.foodsTarget).html(this.loadFoods());
+                },
 				
-                //default render
 				loadFoods: function(){
-					var foods = [];
-                    var menuFoods = mealCalculator.menu.foods;
+					var foods = [], menuFoods = mealCalculator.menu.foods;
 					for(var f in menuFoods){ 
-						//foods.push({name:f, price:menuFoods[f].price}); 
 						foods.push($.extend({name:f}, menuFoods[f])); 
 					}
-					return $.map(foods, function(n,i){
-						return '<a class="food" href="#">'+n.name+'</a>($' + n.price + ')';
-					}).join(",");
+					return this.renderFoods(foods); 
 				},
-				
+
 				clearMenu: function(){
 					$([this.foodsTarget,this.selectedTarget,this.outputTarget].join(",")).html("");
 					$(this.suggestionTarget).hide();
-				}
+				},
 
+                // Renderers
+                renderMenus: function(menus){
+					var menuHtml = [];
+					for(var m in menus){
+						menuHtml.push("<a href='#' class='menu'>"+m+"</a>");
+					}
+                    return menuHtml.join(',');
+                },
+
+                renderFoods: function(foods){
+                    return $.map(foods, function(n,i){
+                        return '<a class="food" href="#">' + n.name + '</a>($' + n.price + ')';
+                    }).join(",");
+                },
+
+                renderSelectedFood: function(cloneTarget){
+                    return $("<span/>")
+                        .append(cloneTarget.clone())
+                        .append("<a class='close' href='#'>x</a>")
+                        .click(function(){
+                            $(this).remove();
+                            return false;
+                        });
+                },
+
+                renderReport: function(items){
+                    var outputHtml = "", total = 0, menu = mealCalculator.menu;
+                    for(var i in items){
+                        var item = menu.foods[items[i]] || menu.meals[items[i]];
+                        if(item){
+                            outputHtml += "<li>" + items[i] + " ($" + item.price + ") </li>";
+                            total += item.price;
+                        }
+                    }
+                    if(outputHtml) outputHtml = '<ul>' + outputHtml + '</ul>';
+                    outputHtml += '<p class="total">總額: $' + Math.round(total*1000)/1000 + '</p>'; //prevent floating point problem
+                    return outputHtml;
+                }
+				
 			};
 		
 			$(document).ready(function(){
